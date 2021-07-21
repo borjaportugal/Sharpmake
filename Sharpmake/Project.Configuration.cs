@@ -641,6 +641,8 @@ namespace Sharpmake
             /// </remarks>
             public string LinkerPdbFilePath = "[conf.TargetPath]" + Path.DirectorySeparatorChar + "[conf.TargetFileFullName][conf.LinkerPdbSuffix].pdb";
 
+            public bool ResolveLinkerPdbFilePath = true;
+
             /// <summary>
             /// Gets or sets the suffix to use in <see cref="CompilerPdbFilePath"/>.
             /// </summary>
@@ -677,7 +679,7 @@ namespace Sharpmake
             /// </para>
             /// </remarks>
             public string CompilerPdbFilePath = "[conf.IntermediatePath]" + Path.DirectorySeparatorChar + "[conf.TargetFileFullName][conf.CompilerPdbSuffix].pdb";
-
+            
             /// <summary>
             /// Gets or sets whether <see cref="CompilerPdbFilePath"/> and
             /// <see cref="LinkerPdbFilePath"/> are relative.
@@ -2341,7 +2343,22 @@ namespace Sharpmake
                 {
                     // Reset to the default if the script set it to an empty string.
                     if (!string.IsNullOrEmpty(LinkerPdbFilePath))
-                        Util.ResolvePath(Project.SharpmakeCsPath, ref LinkerPdbFilePath);
+                    {
+                        if(ResolveLinkerPdbFilePath)
+                            Util.ResolvePath(Project.SharpmakeCsPath, ref LinkerPdbFilePath);
+                        else
+                        {
+                            int FilenameStart = LinkerPdbFilePath.LastIndexOf('\\');
+                            if (FilenameStart != -1)
+                            {
+                                string Filename = LinkerPdbFilePath.Substring(FilenameStart + 1);
+                                string Path = LinkerPdbFilePath.Substring(0, FilenameStart);
+
+                                string ResolvedPath = Util.ResolvePath(Project.SharpmakeCsPath, Path);
+                                LinkerPdbFilePath = ResolvedPath + "\\" + Filename;
+                            }
+                        }
+                    }
                     if (!string.IsNullOrEmpty(CompilerPdbFilePath))
                         Util.ResolvePath(Project.SharpmakeCsPath, ref CompilerPdbFilePath);
                 }

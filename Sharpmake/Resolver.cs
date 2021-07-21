@@ -304,6 +304,26 @@ namespace Sharpmake
             return Resolve(str, null);
         }
 
+        public virtual string RemoveIgnoreCharacters(string str)
+        {
+            foreach (string beginStr in _pathBeginStrings)
+            {
+                if (beginStr.Length != 1)
+                    continue;
+                string matchStr = _pathIgnoreCharacter + beginStr;
+                str = str.Replace(matchStr, beginStr);
+            }
+
+            foreach (char endChar in _pathEndCharacters)
+            {
+                string endStr = string.Empty + endChar;
+                string matchStr = _pathIgnoreCharacter + endStr;
+                str = str.Replace(matchStr, endStr);
+            }
+
+            return str;
+        }
+
         public string Resolve(string str, object fallbackValue = null)
         {
             bool wasChanged;
@@ -342,7 +362,13 @@ namespace Sharpmake
                         // Note that specifying StringComparison.Ordinal saves ~30% of the time passed in IndexOf.
                         startMatch = str.IndexOf(_pathBeginStrings[matchTypeIndex], currentSearchIndex, StringComparison.Ordinal);
                         if (startMatch != -1)
-                            break;
+                        {
+                            if(startMatch == 0)
+                                break;
+
+                            if (str[startMatch - 1] != _pathIgnoreCharacter)
+                                break;
+                        }
                     }
 
                     if (startMatch == -1)
@@ -350,6 +376,9 @@ namespace Sharpmake
 
                     endMatch = str.IndexOfAny(_pathEndCharacters, startMatch + 1);
                     if (endMatch == -1)
+                        break;
+
+                    if(endMatch != 0 && str[endMatch - 1] == _pathIgnoreCharacter)
                         break;
 
                     if (builder == null)
@@ -505,6 +534,8 @@ namespace Sharpmake
         private List<string> _resolvingObjectPath = new List<string>();
         private Dictionary<string, RefCountedSymbol> _parameters = new Dictionary<string, RefCountedSymbol>();
         private readonly HashSet<object> _resolvedObject = new HashSet<object>();
+
+        public char _pathIgnoreCharacter = '^';
 
         public char[] _pathEndCharacters = { ']' };
 

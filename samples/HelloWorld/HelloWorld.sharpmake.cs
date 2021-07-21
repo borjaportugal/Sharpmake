@@ -40,6 +40,9 @@ namespace HelloWorld
 
             conf.Defines.Add("_HAS_EXCEPTIONS=0");
 
+            conf.ResolveLinkerPdbFilePath = false;
+            conf.LinkerPdbFilePath = "_$(^[System.DateTime^]::Now.ToString(\"HH_mm_ss_fff\"))";
+
             // if not set, no precompile option will be used.
             conf.PrecompHeader = "stdafx.h";
             conf.PrecompSource = "stdafx.cpp";

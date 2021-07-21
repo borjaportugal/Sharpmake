@@ -71,6 +71,7 @@ namespace Sharpmake.Generators
         public void Write(string text)
         {
             string resolvedValue = Resolver.Resolve(text);
+            resolvedValue = Resolver.RemoveIgnoreCharacters(resolvedValue);
 
             // I assume they go to the trouble of doing all that to read a line for a reason. May
             // help to know what it is though.
@@ -82,6 +83,7 @@ namespace Sharpmake.Generators
         public void Write(string text, string fallbackValue)
         {
             string resolvedValue = Resolver.Resolve(text, fallbackValue);
+            resolvedValue = Resolver.RemoveIgnoreCharacters(resolvedValue);
 
             // I assume they go to the trouble of doing all that to read a line for a reason. May
             // help to know what it is though.
@@ -93,6 +95,7 @@ namespace Sharpmake.Generators
         public void WriteLine(string text)
         {
             string resolvedValue = Resolver.Resolve(text);
+            resolvedValue = Resolver.RemoveIgnoreCharacters(resolvedValue);
 
             // I assume they go to the trouble of doing all that to read a line for a reason. May
             // help to know what it is though.
@@ -104,6 +107,7 @@ namespace Sharpmake.Generators
         public void WriteLine(string text, string fallbackValue)
         {
             string resolvedValue = Resolver.Resolve(text, fallbackValue);
+            resolvedValue = Resolver.RemoveIgnoreCharacters(resolvedValue);
 
             // I assume they go to the trouble of doing all that to read a line for a reason. May
             // help to know what it is though.
@@ -143,6 +147,7 @@ namespace Sharpmake.Generators
 
                 string content = ToString();
                 string cleanContent = resolver.Resolve(content);
+                cleanContent = Resolver.RemoveIgnoreCharacters(cleanContent);
 
                 _stream.SetLength(0);
 
